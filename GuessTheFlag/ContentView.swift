@@ -14,6 +14,8 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var userScore = 0
+    @State private var showAlertEndGame = false
     var body: some View {
         ZStack {
             LinearGradient(colors: [.blue, .black], startPoint: .top, endPoint: .bottom)
@@ -53,7 +55,7 @@ struct ContentView: View {
                 .background(Color.white.opacity(0.07))
                 .clipShape(.rect(cornerRadius: 20))
                 Spacer()
-                Text("Your score is:")
+                Text("Your score is: \(userScore)")
                     .font(.title2)
                     .foregroundStyle(.white)
                 Spacer()
@@ -62,18 +64,30 @@ struct ContentView: View {
         }
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
-        } message: {
-            Text("Your score is")
+        }
+        .alert("You are a winner!", isPresented: $showAlertEndGame) {
+            Button("Start a new game", action: resetScore)
         }
     }
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
+            userScore += 1
             scoreTitle = "Correct"
         } else {
-            scoreTitle = "Wrorng"
+            scoreTitle = "Wrong"
         }
         showingScore = true
+        endGame()
+    }
+    func resetScore() {
+        userScore = 0
+    }
+    
+    func endGame() {
+        if userScore == 8 {
+            showAlertEndGame = true
+        }
     }
     
     func askQuestion() {
